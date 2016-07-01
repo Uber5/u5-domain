@@ -20,5 +20,8 @@
     "mocha": "2.5.3",
     "rimraf": "2.5.2",
     "source-map-support": "0.4.1"
+  },
+  "dependencies": {
+    "invariant": "2.2.1"
   }
 }
