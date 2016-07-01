@@ -1,4 +1,5 @@
 import invariant from 'invariant'
+import toGraphQLSchema from './to-graphql'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
@@ -42,3 +43,7 @@ export class DomainType {
   }
 }
 
+export class DomainSchema {
+}
+
+export { toGraphQLSchema }
