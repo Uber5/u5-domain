@@ -12,6 +12,13 @@ const mapStringToType = domainScalarTypes.reduce((memo, t) => { memo[t] = t; ret
 
 export const isScalarType = t => domainScalarTypes.includes(t)
 
+// higher order function
+const doesNotAppearIn = (whiteList) => o => Object.keys(o).
+  map(prop => whiteList.includes(prop) ? null : prop).
+  filter(prop => prop)
+
+const invalidTypeProperties = doesNotAppearIn([ 'name', 'fields' ])
+
 export class DomainField {
   constructor(name, spec) {
     invariant(name && spec, 'DomainField needs a name and a spec')
@@ -29,6 +36,8 @@ export class DomainField {
 export class DomainType {
   constructor(spec) {
     invariant(spec && spec.name, 'a domain type needs a name')
+    const invalidProps = invalidTypeProperties(spec)
+    invariant(!invalidProps.length, `DomainType ${ spec.name } has invalid properties: ${ invalidProps }`)
     this.fields = mapFieldsFromSpec(spec)
   }
 }
