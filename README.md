@@ -14,8 +14,8 @@ The aspects we try to cover here:
 
 # Example
 
-Say, we want to use have orders and order items in our domain model. We may
-describe the domain model as follows:
+Say, we need orders and order items in our domain model. We may describe the
+domain model as follows:
 
 ```
 const orderType = new DomainType({

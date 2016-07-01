@@ -1,3 +1,4 @@
+require('babel-polyfill')
 import expect from 'expect'
 import * as domain from '../src'
 
