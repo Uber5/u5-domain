@@ -37,6 +37,7 @@ const orderType = new DomainType({
 // TODO: complete the example
 
 const domainSchema = new DomainSchema([ orderType, shopType ])
-const graphQLOrderType = domain.toGraphQLSchema(domainSchema)
+import * as graphql from 'graphql'
+const graphQLOrderType = domain.toGraphQLSchema(graphql, domainSchema)
 
 ```
