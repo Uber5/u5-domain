@@ -3,13 +3,27 @@ import toGraphQLTypes from './to-graphql'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
-export const DomainString = 'String'
-export const DomainInt = 'Int'
-export const DomainID = 'ID'
+const Spec = Symbol('Spec')
+
+export class ScalarType {
+  constructor(name) {
+    this[Spec] = {
+      name
+    }
+  }
+  get name() { return this[Spec].name }
+  get [Symbol.getStringTag]() {
+    return 'Scalar ' + this.name
+  }
+}
+
+export const DomainString = new ScalarType('String')
+export const DomainInt = new ScalarType('Int')
+export const DomainID = new ScalarType('ID')
 
 export const domainScalarTypes = [ DomainString, DomainInt, DomainID ]
 
-const mapStringToType = domainScalarTypes.reduce((memo, t) => { memo[t] = t; return memo }, {})
+const mapStringToType = domainScalarTypes.reduce((memo, t) => { memo[t.name] = t; return memo }, {})
 
 export const isScalarType = t => domainScalarTypes.includes(t)
 
@@ -23,11 +37,17 @@ const invalidTypeProperties = doesNotAppearIn([ 'name', 'fields' ])
 export class DomainField {
   constructor(name, spec) {
     invariant(name && spec, 'DomainField needs a name and a spec')
-    this.spec = {}
+    const normalized = this[Spec] = {}
     if (isScalarType(spec)) {
-      this.spec.type = spec.type
+      normalized.type = spec
+    } else if (mapStringToType[spec]) {
+      normalized.type = mapStringToType[spec]
     } else if (mapStringToType[spec.type]) {
-      this.spec.type = mapStringToType[spec.type]
+      normalized.type = mapStringToType[spec.type]
+    } else if (spec.type instanceof ScalarType || spec.type instanceof DomainType) {
+      normalized.type = spec.type
+    } else if (typeof spec.type === 'function') {
+      normalized.type = spec.type
     } else {
       throw new Error(`Unable to determine type for field ${ name }`)
     }
@@ -38,13 +58,14 @@ export class DomainType {
   constructor(spec) {
 
     invariant(spec && spec.name, 'a domain type needs a name')
-    this.name = spec.name
+    this[Spec] = { name: spec.name }
 
     const invalidProps = invalidTypeProperties(spec)
     invariant(!invalidProps.length, `DomainType ${ spec.name } has invalid properties: ${ invalidProps }`)
-    this.fields = mapFieldsFromSpec(spec)
+    this[Spec].fields = mapFieldsFromSpec(spec)
 
   }
+  get name() { return this[Spec].name }
 }
 
 export class DomainSchema {

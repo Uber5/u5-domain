@@ -15,6 +15,8 @@ describe('types', () => {
       field2: 'String',
       field3: { type: domain.DomainString },
       field4: { type: 'String' },
+      field5: { type: () => new domain.DomainType({ name: 'objectType' })},
+      field6: { type: new domain.DomainType({ name: 'objectType' })},
     }
   })
 
