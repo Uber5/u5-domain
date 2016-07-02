@@ -38,7 +38,7 @@ export class DomainField {
   constructor(name, spec) {
     invariant(name && spec, 'DomainField needs a name and a spec')
     const normalized = this[Spec] = {}
-    if (isScalarType(spec)) {
+    if (isScalarType(spec) || spec instanceof DomainType || typeof spec === 'function') {
       normalized.type = spec
     } else if (mapStringToType[spec]) {
       normalized.type = mapStringToType[spec]
