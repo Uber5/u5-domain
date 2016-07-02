@@ -1,6 +1,8 @@
 export const typeToGraphQLType = (type, gql, schema) => {
+  console.log('type.fields', type.fields)
   return new gql.GraphQLObjectType({
-    name: type.name
+    name: type.name,
+    fields: { bla: { type: gql.GraphQLString } } // TODO: fake
   })
 }
 

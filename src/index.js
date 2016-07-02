@@ -65,6 +65,7 @@ export class DomainType {
     this[Spec].fields = mapFieldsFromSpec(spec)
 
   }
+  get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
 }
 
