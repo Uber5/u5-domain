@@ -1,12 +1,11 @@
+export const typeToGraphQLType = (type, gql, schema) => {
+  return new gql.GraphQLObjectType({
+    name: type.name
+  })
+}
+
 export default (gql, schema) => {
-  return new gql.GraphQLSchema({
-    query: new gql.GraphQLObjectType({
-      name: 'query',
-      fields: {
-        dummy: {
-          type: gql.GraphQLInt
-        }
-      }
-    })
+  return (schema && schema.types || []).map(t => {
+    return typeToGraphQLType(t, gql, schema)
   })
 }

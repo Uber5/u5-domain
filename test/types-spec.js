@@ -14,7 +14,7 @@ describe('types', () => {
       field1: domain.DomainString,
       field2: 'String',
       field3: { type: domain.DomainString },
-      field4: { type: 'String' }
+      field4: { type: 'String' },
     }
   })
 

@@ -1,5 +1,5 @@
 import invariant from 'invariant'
-import toGraphQLSchema from './to-graphql'
+import toGraphQLTypes from './to-graphql'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
@@ -36,14 +36,21 @@ export class DomainField {
 
 export class DomainType {
   constructor(spec) {
+
     invariant(spec && spec.name, 'a domain type needs a name')
+    this.name = spec.name
+
     const invalidProps = invalidTypeProperties(spec)
     invariant(!invalidProps.length, `DomainType ${ spec.name } has invalid properties: ${ invalidProps }`)
     this.fields = mapFieldsFromSpec(spec)
+
   }
 }
 
 export class DomainSchema {
+  constructor(spec) {
+    this.types = spec.types || []
+  }
 }
 
-export { toGraphQLSchema }
+export { toGraphQLTypes }
