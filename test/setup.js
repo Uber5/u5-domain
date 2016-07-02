@@ -11,7 +11,12 @@ const twoCyclicTypes = () => {
   const [ t1, t2 ] = [
     new domain.DomainType({
       name: 't1',
-      fields: { 'someT2': () => t2 }
+      fields: {
+        'someT2': () => t2,
+        'someScalarField': domain.DomainString,
+        'someIntField': domain.DomainInt,
+        'someIDField': domain.DomainID
+      }
     }),
     new domain.DomainType({
       name: 't2',
