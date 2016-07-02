@@ -6,7 +6,10 @@ describe('toGraphQLSchema', () => {
   const schemaWithOneType = new domain.DomainSchema({
     types: [
       new domain.DomainType({
-        name: 'EmptyType'
+        name: 'SomeType',
+        fields: {
+          someField: domain.DomainString
+        }
       })
     ]
   })

@@ -11,11 +11,11 @@ const twoCyclicTypes = () => {
   const [ t1, t2 ] = [
     new domain.DomainType({
       name: 't1',
-      fields: { 't2': () => t2 }
+      fields: { 'someT2': () => t2 }
     }),
     new domain.DomainType({
       name: 't2',
-      fields: { 't1': () => t1 }
+      fields: { 'someT1': () => t1 }
     }),
   ]
   return [ t1, t2 ]

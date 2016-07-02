@@ -1,13 +1,34 @@
-export const typeToGraphQLType = (type, gql, schema) => {
-  console.log('type.fields', type.fields)
-  return new gql.GraphQLObjectType({
-    name: type.name,
-    fields: { bla: { type: gql.GraphQLString } } // TODO: fake
-  })
+const typeToGraphQLScalar = (type, gql) => type.toGraphQLType(gql)
+
+const fieldToGraphQLField = (field, gql, gqlTypes) => {
+  if (field.type.isScalar) {
+    return typeToGraphQLScalar(field.type, gql)
+  } else {
+    return typeToGraphQLType(field.type, gql, gqlTypes)
+  }
+}
+
+const fieldsToGraphQLFields = (fields, gql, gqlTypes) => (fields || []).
+  map(f => fieldToGraphQLField(f, gql, gqlTypes)).
+  reduce((memo, f) => { memo[f.name] = { type: f }; return memo }, {})
+
+const typeToGraphQLType = (type, gql, gqlTypes) => {
+  if (!gqlTypes[type.name]) {
+    let fields
+    gqlTypes[type.name] = new gql.GraphQLObjectType({
+      name: type.name,
+      fields: () => fields // break recursion
+    })
+    fields = fieldsToGraphQLFields(type.fields, gql, gqlTypes)
+  }
+  // console.log('typeToGraphQLType', type.name, gqlTypes)
+  return gqlTypes[type.name]
 }
 
 export default (gql, schema) => {
-  return (schema && schema.types || []).map(t => {
-    return typeToGraphQLType(t, gql, schema)
+  const types = {};
+  (schema && schema.types || []).map(t => {
+    return typeToGraphQLType(t, gql, types)
   })
+  return Object.keys(types).map(name => types[name])
 }

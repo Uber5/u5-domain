@@ -6,20 +6,23 @@ const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new
 const Spec = Symbol('Spec')
 
 export class ScalarType {
-  constructor(name) {
+  constructor(name, mapGraphQLToType) {
     this[Spec] = {
-      name
+      name,
+      mapGraphQLToType
     }
   }
   get name() { return this[Spec].name }
   get [Symbol.getStringTag]() {
     return 'Scalar ' + this.name
   }
+  isScalar() { return true }
+  toGraphQLType(gql) { return this[Spec].mapGraphQLToType(gql) }
 }
 
-export const DomainString = new ScalarType('String')
-export const DomainInt = new ScalarType('Int')
-export const DomainID = new ScalarType('ID')
+export const DomainString = new ScalarType('String', gql => gql.GraphQLString)
+export const DomainInt = new ScalarType('Int', gql => gql.GraphQLInt)
+export const DomainID = new ScalarType('ID', gql => gql.GraphQLID)
 
 export const domainScalarTypes = [ DomainString, DomainInt, DomainID ]
 
@@ -38,6 +41,7 @@ export class DomainField {
   constructor(name, spec) {
     invariant(name && spec, 'DomainField needs a name and a spec')
     const normalized = this[Spec] = {}
+    normalized.name = name
     if (isScalarType(spec) || spec instanceof DomainType || typeof spec === 'function') {
       normalized.type = spec
     } else if (mapStringToType[spec]) {
@@ -52,6 +56,8 @@ export class DomainField {
       throw new Error(`Unable to determine type for field ${ name }`)
     }
   }
+  get name() { return this[Spec].name }
+  get type() { const t = this[Spec].type; return typeof t === 'function' ? t() : t }
 }
 
 export class DomainType {
