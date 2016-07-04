@@ -11,7 +11,7 @@
     "prepublish": "npm run clean && npm run build",
     "clean": "rimraf lib",
     "test:watch": "npm run test -- --watch",
-    "test": "mocha --compilers js:babel-register --recursive --require ./test/setup.js --full-trace"
+    "test": "mocha --compilers js:babel-register --recursive --delay --require ./test/setup.js --full-trace"
   },
   "author": "Chris Oloff <chris@uber5.com> (http://about.uber5.com/)",
   "license": "ISC",
@@ -23,11 +23,13 @@
     "graphql": "0.6.0",
     "mocha": "2.5.3",
     "mongodb": "2.1.18",
+    "pow-mongodb-fixtures": "0.13.0",
     "rimraf": "2.5.2",
     "source-map-support": "0.4.1"
   },
   "dependencies": {
     "babel-polyfill": "6.9.1",
-    "invariant": "2.2.1"
+    "invariant": "2.2.1",
+    "pluralize": "3.0.0"
   }
 }

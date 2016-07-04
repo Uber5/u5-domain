@@ -1,5 +1,6 @@
 import invariant from 'invariant'
 import toGraphQLTypes from './to-graphql'
+import { connectToMongo } from './to-mongo'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
@@ -82,6 +83,10 @@ export class DomainSchema {
   get types() {
     return this[Spec].types.reduce((memo, t) => { memo[t.name] = t; return memo }, {})
   }
+  validate(typeName, object) {
+    const t = this[Spec].types[typeName]
+    return Promise.resolve() // TODO: fake
+  }
 }
 
-export { toGraphQLTypes }
+export { toGraphQLTypes, connectToMongo }
