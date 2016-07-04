@@ -26,9 +26,9 @@ const typeToGraphQLType = (type, gql, gqlTypes) => {
 }
 
 export default (gql, schema) => {
-  const types = {};
-  (schema && schema.types || []).map(t => {
-    return typeToGraphQLType(t, gql, types)
+  const graphQLTypes = {};
+  (schema && Object.values(schema.types) || []).map(t => {
+    return typeToGraphQLType(t, gql, graphQLTypes)
   })
-  return Object.keys(types).map(name => types[name])
+  return Object.keys(graphQLTypes).map(name => graphQLTypes[name])
 }

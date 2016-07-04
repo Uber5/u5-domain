@@ -77,7 +77,10 @@ export class DomainType {
 
 export class DomainSchema {
   constructor(spec) {
-    this.types = spec.types || []
+    this[Spec] = { types: spec.types || [] }
+  }
+  get types() {
+    return this[Spec].types.reduce((memo, t) => { memo[t.name] = t; return memo }, {})
   }
 }
 
