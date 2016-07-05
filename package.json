@@ -1,6 +1,6 @@
 {
   "name": "u5-domain",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Describe a domain, deduce useful artefacts from it",
   "main": "dist/index.js",
   "engines": {
@@ -32,5 +32,7 @@
     "invariant": "2.2.1",
     "pluralize": "3.0.0"
   },
-  "files": [ "lib" ]
+  "files": [
+    "lib"
+  ]
 }
