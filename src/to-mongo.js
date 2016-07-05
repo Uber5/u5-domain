@@ -14,7 +14,6 @@ class MongoCursorWrapper {
         const collName = collectionNameOf(this.params.domainType)
         const coll = db.collection(collName)
         coll.find.apply(coll, this.params.findArguments).toArray((err, docs) => {
-          console.log('should have done query', collName, this.params.findArguments, docs)
           if (err) return reject(err);
           resolve(docs)
         })
@@ -39,7 +38,6 @@ class MongoTypeWrapper {
       const coll = db.collection(collName)
       return coll.insert.apply(coll, args)
     }).then(result => {
-      console.log('MongoTypeWrapper insert', result)
       return result
     })
   }
@@ -47,7 +45,6 @@ class MongoTypeWrapper {
 
 export const connectToMongo = (mongo, schema) => () => new Proxy({}, {
   get: function(target, name) {
-    console.log('connectToMongo, get', target, name, schema)
     return new MongoTypeWrapper(mongo, schema.types[name])
   }
 })

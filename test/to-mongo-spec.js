@@ -9,17 +9,14 @@ describe('to mongo', () => {
   it('allows to connect a schema to mongo', (done) => {
 
     const connected = domain.connectToMongo(mongo, schema)
+    const t2Type = connected().t2
     const newT2 = { someIntField: 42 }
-    schema.validate('t2', newT2).then(() => {
-      console.log('validated t2', newT2)
-      connected().t2.insert(newT2).then(result => {
-        console.log('inserted t2', newT2)
-        console.log('inserted t2, result', result)
-        connected().t2.find({}).fetch().
-          then(t2s => { console.log(t2s); done() }).
-          catch(e => console.log(e))
-      }).catch(err => console.log(err))
-    })
+    schema.validate('t2', newT2)
+    .then(() => t2Type.insert(newT2))
+    .then(result => t2Type.find({}).fetch())
+    .then(t2s => { console.log('t2s in mongo', t2s); done() })
+    .catch(err => console.log(err))
+
   })
 
 })
