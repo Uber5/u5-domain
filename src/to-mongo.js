@@ -22,40 +22,30 @@ class MongoCursorWrapper {
   }
 }
 
+const wrapMongoCollectionFunction = function(domainType, functionName) {
+  return function() {
+    const args = arguments
+    return this.mongo.then(db => {
+      const collName = collectionNameOf(domainType)
+      const collection = db.collection(collName)
+      return collection[functionName].apply(collection, args)
+    })
+  }
+}
+
 class MongoTypeWrapper {
   constructor(mongo, domainType) {
     this.mongo = mongo
     this.domainType = domainType
-    this.update = function() {
-      const args = arguments
-      return this.mongo.then(db => {
-        const collName = collectionNameOf(this.domainType)
-        const coll = db.collection(collName)
-        return coll.update.apply(coll, args)
-      })
-    }.bind(this)
-    this.remove = function() {
-      const args = arguments
-      return this.mongo.then(db => {
-        const collName = collectionNameOf(this.domainType)
-        const coll = db.collection(collName)
-        return coll.remove.apply(coll, args)
-      })
-    }.bind(this)
+
+    const functionsToBeWrapped = [ 'insert', 'update', 'remove' ]
+    functionsToBeWrapped
+    .map(fn => this[fn] = wrapMongoCollectionFunction(this.domainType, fn))
+
   }
   find() {
     const [ mongo, domainType ] = [ this.mongo, this.domainType ]
     return new MongoCursorWrapper({ mongo, domainType, findArguments: arguments })
-  }
-  insert() {
-    const args = Array.from(arguments)
-    return this.mongo.then(db => {
-      const collName = collectionNameOf(this.domainType)
-      const coll = db.collection(collName)
-      return coll.insert.apply(coll, args)
-    }).then(result => {
-      return result
-    })
   }
 }
 
