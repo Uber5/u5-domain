@@ -31,5 +31,6 @@
     "babel-polyfill": "6.9.1",
     "invariant": "2.2.1",
     "pluralize": "3.0.0"
-  }
+  },
+  "files": [ "lib" ]
 }
