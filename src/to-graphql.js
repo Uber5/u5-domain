@@ -30,5 +30,5 @@ export default (gql, schema) => {
   (schema && Object.values(schema.types) || []).map(t => {
     return typeToGraphQLType(t, gql, graphQLTypes)
   })
-  return Object.keys(graphQLTypes).map(name => graphQLTypes[name])
+  return graphQLTypes
 }

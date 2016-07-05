@@ -19,11 +19,11 @@ describe('toGraphQLSchema', () => {
   it('produces a schema', () => {
 
     const emptyListOfGraphQLTypes = domain.toGraphQLTypes(graphql, emptySchema)
-    expect(emptyListOfGraphQLTypes).toEqual([])
+    expect(emptyListOfGraphQLTypes).toEqual({})
 
-    const listOfOneGraphQLType = domain.toGraphQLTypes(graphql, schemaWithOneType)
-    expect(listOfOneGraphQLType.length).toEqual(1)
-    expect(listOfOneGraphQLType[0]).toBeA(graphql.GraphQLObjectType)
+    const graphQLTypes = domain.toGraphQLTypes(graphql, schemaWithOneType)
+    expect(Object.keys(graphQLTypes).length).toEqual(1)
+    expect(Object.values(graphQLTypes)[0]).toBeA(graphql.GraphQLObjectType)
 
   })
 
@@ -33,8 +33,8 @@ describe('toGraphQLSchema', () => {
       query: new graphql.GraphQLObjectType({
         name: 'query',
         fields: {
-          t1: { type: graphQLTypes[0] },
-          t2: { type: graphQLTypes[1] }
+          t1: { type: graphQLTypes.t1 },
+          t2: { type: graphQLTypes.t2 }
         }
       })
     })
