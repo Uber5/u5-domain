@@ -2,7 +2,7 @@
   "name": "u5-domain",
   "version": "0.0.2",
   "description": "Describe a domain, deduce useful artefacts from it",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "engines": {
     "node": "~6"
   },
