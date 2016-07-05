@@ -34,6 +34,14 @@ class MongoTypeWrapper {
         return coll.update.apply(coll, args)
       })
     }.bind(this)
+    this.remove = function() {
+      const args = arguments
+      return this.mongo.then(db => {
+        const collName = collectionNameOf(this.domainType)
+        const coll = db.collection(collName)
+        return coll.remove.apply(coll, args)
+      })
+    }.bind(this)
   }
   find() {
     const [ mongo, domainType ] = [ this.mongo, this.domainType ]
