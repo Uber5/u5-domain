@@ -1,3 +1,5 @@
+require('babel-polyfill')
+
 import invariant from 'invariant'
 import toGraphQLTypes from './to-graphql'
 import { connectToMongo } from './to-mongo'
