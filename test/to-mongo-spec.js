@@ -14,7 +14,7 @@ describe('to mongo', () => {
     schema.validate('t2', newT2)
     .then(() => t2Type.insert(newT2))
     .then(result => t2Type.find({ someIntField: 42 }).fetch())
-    .then(t2s => { console.log('t2s in mongo', t2s); expect(t2s.length).toEqual(1); done() })
+    .then(t2s => { /* console.log('t2s in mongo', t2s); */ expect(t2s.length).toEqual(1); done() })
     .catch(err => console.log(err))
 
   })
@@ -25,7 +25,7 @@ describe('to mongo', () => {
     .then(insertResult => t2Type.update({ _id: newT2._id }, { $set: { someScalarField: 'some text' } }))
     .then(updateResult => { expect(updateResult.result.nModified).toEqual(1) })
     .then(() => t2Type.find(newT2._id).fetch())
-    .then(t2s => { console.log('t2, found after update', t2s); expect(t2s.length).toEqual(1); done()})
+    .then(t2s => { /* console.log('t2, found after update', t2s); */ expect(t2s.length).toEqual(1); done()})
     .catch(err => console.log(err))
   })
 
@@ -35,9 +35,9 @@ describe('to mongo', () => {
     .then(() => t2Type.find(newT2._id).fetch())
     .then(t2s => { expect(t2s.length).toEqual(1) })
     .then(() => t2Type.remove({ _id: newT2._id }))
-    .then(deleteResult => { console.log('deleteResult', deleteResult); expect(deleteResult.result.n).toEqual(1) })
+    .then(deleteResult => { /*console.log('deleteResult', deleteResult); */ expect(deleteResult.result.n).toEqual(1) })
     .then(() => t2Type.find(newT2._id).fetch())
-    .then(t2s => { console.log('t2, found after delete', t2s); expect(t2s.length).toEqual(0); done()})
+    .then(t2s => { /* console.log('t2, found after delete', t2s); */ expect(t2s.length).toEqual(0); done()})
     .catch(err => console.log(err))
   })
 

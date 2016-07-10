@@ -16,6 +16,12 @@ describe('toGraphQLSchema', () => {
 
   const graphQLTypesWithCycles = () => domain.toGraphQLTypes(graphql, fixtures.schemaWithCyclicTypes())
 
+  it('fails on invalid parameters', () => {
+    expect(() => domain.toGraphQLTypes({}, [])).toThrow(/requires graphql/)
+    expect(() => domain.toGraphQLTypes(graphql, {})).toThrow(/requires object with 'types'/)
+    expect(() => domain.toGraphQLTypes(graphql, { types: [] })).toNotThrow()
+  })
+
   it('produces a schema', () => {
 
     const emptyListOfGraphQLTypes = domain.toGraphQLTypes(graphql, emptySchema)

@@ -1,3 +1,5 @@
+import invariant from 'invariant'
+
 const typeToGraphQLScalar = (type, gql) => type.toGraphQLType(gql)
 
 const fieldToGraphQLField = (field, gql, gqlTypes) => {
@@ -26,6 +28,8 @@ const typeToGraphQLType = (type, gql, gqlTypes) => {
 }
 
 export default (gql, schema) => {
+  invariant(gql && gql.GraphQLSchema, "requires graphql instance as first argument")
+  invariant(schema && schema.types, "requires object with 'types' as second argument")
   const graphQLTypes = {};
   (schema && Object.values(schema.types) || []).map(t => {
     return typeToGraphQLType(t, gql, graphQLTypes)
