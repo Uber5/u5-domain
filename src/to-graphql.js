@@ -1,4 +1,5 @@
 import invariant from 'invariant'
+const debug = require('debug')('u5-domain')
 
 const typeToGraphQLScalar = (type, gql) => type.toGraphQLType(gql)
 
@@ -21,9 +22,7 @@ const typeToGraphQLType = (type, gql, gqlTypes) => {
       name: type.name,
       fields: () => fields // break recursion
     })
-    console.log('fieldsToGraphQLFields, type.fields', type.fields.map(f => f.toString()).join(', '))
     fields = fieldsToGraphQLFields(type.fields, gql, gqlTypes)
-    console.log('fieldsToGraphQLFields, fields', fields)
   }
   // console.log('typeToGraphQLType', type.name, gqlTypes)
   return gqlTypes[type.name]
@@ -35,6 +34,10 @@ export default (gql, schema) => {
   const graphQLTypes = {};
   (schema && Object.values(schema.types) || []).map(t => {
     return typeToGraphQLType(t, gql, graphQLTypes)
+  })
+  debug('graphql types:')
+  Object.entries(graphQLTypes).forEach(([ key, value ]) => {
+    debug('  ' + key, value)
   })
   return graphQLTypes
 }

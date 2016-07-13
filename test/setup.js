@@ -36,9 +36,7 @@ const defaultMongoUrl = 'mongodb://localhost/u5-domain-test'
 
 global.mongo = new Promise((resolve, reject) => {
   const url = process.env.MONGO_URL || defaultMongoUrl
-  console.log('should connect to', url)
   MongoClient.connect(url, (err, database) => {
-    console.log('connected to mongo', url, err)
     if (err) { 
       console.log('error while connecting to ' + url, err)
       return reject(err)
@@ -60,4 +58,3 @@ connect(process.env.MONGO_URL || defaultMongoUrl).clearAllAndLoad({ t2S }, (err)
   .then(() => run())
   .catch(err => { console.log(err); throw err })
 })
-

@@ -73,7 +73,7 @@ export class DomainType {
     const invalidProps = invalidTypeProperties(spec)
     invariant(!invalidProps.length, `DomainType ${ spec.name } has invalid properties: ${ invalidProps }`)
     this[Spec].fields = mapFieldsFromSpec(spec)
-
+    this[Spec].fields.push(new DomainField("_id", DomainID))
   }
   get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
