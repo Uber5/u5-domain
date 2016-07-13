@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir lib --source-maps",
+    "build:watch": "npm run build -- --watch",
     "prepublish": "npm run clean && npm run build",
     "clean": "rimraf lib",
     "test:watch": "npm run test -- --watch",
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "babel-polyfill": "6.9.1",
+    "camelcase": "3.0.0",
     "invariant": "2.2.1",
     "pluralize": "3.0.0"
   },

@@ -11,8 +11,8 @@ const fieldToGraphQLField = (field, gql, gqlTypes) => {
 }
 
 const fieldsToGraphQLFields = (fields, gql, gqlTypes) => (fields || []).
-  map(f => fieldToGraphQLField(f, gql, gqlTypes)).
-  reduce((memo, f) => { memo[f.name] = { type: f }; return memo }, {})
+  map(f => ({ name: f.name, type: fieldToGraphQLField(f, gql, gqlTypes) })).
+  reduce((memo, f) => { memo[f.name] = { type: f.type }; return memo }, {})
 
 const typeToGraphQLType = (type, gql, gqlTypes) => {
   if (!gqlTypes[type.name]) {
@@ -21,7 +21,9 @@ const typeToGraphQLType = (type, gql, gqlTypes) => {
       name: type.name,
       fields: () => fields // break recursion
     })
+    console.log('fieldsToGraphQLFields, type.fields', type.fields.map(f => f.toString()).join(', '))
     fields = fieldsToGraphQLFields(type.fields, gql, gqlTypes)
+    console.log('fieldsToGraphQLFields, fields', fields)
   }
   // console.log('typeToGraphQLType', type.name, gqlTypes)
   return gqlTypes[type.name]

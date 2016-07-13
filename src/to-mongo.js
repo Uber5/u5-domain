@@ -1,7 +1,9 @@
+import invariant from 'invariant'
+import camelcase from 'camelcase'
 import pluralize from 'pluralize'
 
 function collectionNameOf(domainType) {
-  return pluralize(domainType.name)
+  return pluralize(camelcase(domainType.name))
 }
 
 class MongoCursorWrapper {
@@ -51,6 +53,7 @@ class MongoTypeWrapper {
 
 export const connectToMongo = (mongo, schema) => () => new Proxy({}, {
   get: function(target, name) {
+    invariant(mongo && mongo.then, '"mongo" must be a promise')
     return new MongoTypeWrapper(mongo, schema.types[name])
   }
 })

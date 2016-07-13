@@ -59,6 +59,7 @@ export class DomainField {
       throw new Error(`Unable to determine type for field ${ name }`)
     }
   }
+  toString() { return `DomainField[${ this.name }, type=${ this.type }]`}
   get name() { return this[Spec].name }
   get type() { const t = this[Spec].type; return typeof t === 'function' ? t() : t }
 }
