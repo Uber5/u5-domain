@@ -2,11 +2,13 @@ import { MongoClient } from 'mongodb'
 
 describe('to mongo', () => {
 
-  const [ t1, t2 ] = fixtures.twoCyclicTypes()
+  const [ t1, t2, t1Detail ] = fixtures.twoCyclicTypes()
 
-  const schema = new domain.DomainSchema({ types: [ t1, t2] })
+  const schema = new domain.DomainSchema({ types: [ t1, t2, t1Detail ] })
   const connected = domain.connectToMongo(mongo, schema)
   const t2Type = connected().t2
+  const t1Type = connected().t1
+  const t1DetailType = connected().t1Detail
 
   it('allows to connect a schema to mongo, insert and find', (done) => {
 
@@ -41,4 +43,30 @@ describe('to mongo', () => {
     .catch(err => console.log(err))
   })
 
+  describe('"hasMany", "belongsTo", "hasOne"', () => {
+    /**
+     * Weird: We can do this without implementing anything specific for the 'hasMany' specifiction of t1
+     * We may want to check though that t1Detail.shopId is a valid property.
+     * But how? The way we wrap the insert() function is generic. We could filter properties
+     * in fetch() in to-mongo.js?
+    */
+    const t1 = { someScalarField: 99 }
+    const t1Detail = { description: 'Some details...'}
+    beforeEach(done => {
+      t1Type.insert(t1).then(() => {
+        t1Detail.shopId = t1._id
+        return t1DetailType.validate(t1Detail)
+      })
+      .then(() => t1DetailType.insert(t1Detail))
+      .then(() => done())
+      .catch(err => console.log('err', err))
+    })
+    it('allows to query via "hasMany"', done => {
+      t1DetailType.find({ shopId: t1._id }).fetch().then(details => {
+        expect(details.length).toEqual(1)
+        expect(details[0].description).toEqual('Some details...')
+        done()
+      })
+    })
+  })
 })

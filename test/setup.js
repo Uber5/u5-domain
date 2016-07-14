@@ -8,7 +8,7 @@ global.domain = domain
 global.graphql = graphql
 
 const twoCyclicTypes = () => {
-  const [ t1, t2 ] = [
+  const [ t1, t2, t1Detail ] = [
     new domain.DomainType({
       name: 't1',
       fields: {
@@ -16,14 +16,27 @@ const twoCyclicTypes = () => {
         'someScalarField': domain.DomainString,
         'someIntField': domain.DomainInt,
         'someIDField': domain.DomainID
+      },
+      hasMany: {
+        details: () => t1Detail,
+        specialDetails: () => ({
+          type: () => t1Detail,
+          foreignKey: 'specialShopId'
+        })
       }
     }),
     new domain.DomainType({
       name: 't2',
       fields: { 'someT1': () => t1 }
     }),
+    new domain.DomainType({
+      name: 't1Detail',
+      fields: {
+        description: domain.DomainString
+      },
+    })
   ]
-  return [ t1, t2 ]
+  return [ t1, t2, t1Detail ]
 }
 
 const schemaWithCyclicTypes = () => new domain.DomainSchema({ types: twoCyclicTypes() })
@@ -37,7 +50,7 @@ const defaultMongoUrl = 'mongodb://localhost/u5-domain-test'
 global.mongo = new Promise((resolve, reject) => {
   const url = process.env.MONGO_URL || defaultMongoUrl
   MongoClient.connect(url, (err, database) => {
-    if (err) { 
+    if (err) {
       console.log('error while connecting to ' + url, err)
       return reject(err)
     }

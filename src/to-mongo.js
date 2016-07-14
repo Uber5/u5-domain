@@ -49,11 +49,15 @@ class MongoTypeWrapper {
     const [ mongo, domainType ] = [ this.mongo, this.domainType ]
     return new MongoCursorWrapper({ mongo, domainType, findArguments: arguments })
   }
+  validate(instance) {
+    return Promise.resolve(null) // TODO: fake
+  }
 }
 
 export const connectToMongo = (mongo, schema) => () => new Proxy({}, {
   get: function(target, name) {
     invariant(mongo && mongo.then, '"mongo" must be a promise')
+    invariant(schema.types[name], `invalid domain type ${ name }`)
     return new MongoTypeWrapper(mongo, schema.types[name])
   }
 })

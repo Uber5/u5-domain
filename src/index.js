@@ -3,10 +3,10 @@ require('babel-polyfill')
 import invariant from 'invariant'
 import toGraphQLTypes from './to-graphql'
 import { connectToMongo } from './to-mongo'
+import { Spec } from './common'
+import { mapHasManyFromSpec } from './associations'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
-
-const Spec = Symbol('Spec')
 
 export class ScalarType {
   constructor(name, mapGraphQLToType) {
@@ -38,7 +38,7 @@ const doesNotAppearIn = (whiteList) => o => Object.keys(o).
   map(prop => whiteList.includes(prop) ? null : prop).
   filter(prop => prop)
 
-const invalidTypeProperties = doesNotAppearIn([ 'name', 'fields' ])
+const invalidTypeProperties = doesNotAppearIn([ 'name', 'fields', 'hasMany' ])
 
 export class DomainField {
   constructor(name, spec) {
@@ -74,6 +74,8 @@ export class DomainType {
     invariant(!invalidProps.length, `DomainType ${ spec.name } has invalid properties: ${ invalidProps }`)
     this[Spec].fields = mapFieldsFromSpec(spec)
     this[Spec].fields.push(new DomainField("_id", DomainID))
+
+    this[Spec].hasMany = mapHasManyFromSpec(spec)
   }
   get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
