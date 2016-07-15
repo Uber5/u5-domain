@@ -117,6 +117,9 @@ export class DomainType {
     return Promise.resolve(filterValidateResult(result))
 
   }
+  toString() {
+    return `DomainType[${ this.name }]`
+  }
 }
 
 const initialiseAssociations = type => {

@@ -7,7 +7,7 @@ global.expect = expect
 global.domain = domain
 global.graphql = graphql
 
-const twoCyclicTypes = () => {
+const withCyclicTypes = () => {
   const [ t1, t2, t1Detail ] = [
     new domain.DomainType({
       name: 't1',
@@ -42,9 +42,9 @@ const twoCyclicTypes = () => {
   return [ t1, t2, t1Detail ]
 }
 
-const schemaWithCyclicTypes = () => new domain.DomainSchema({ types: twoCyclicTypes() })
+const schemaWithCyclicTypes = () => new domain.DomainSchema({ types: withCyclicTypes() })
 
-global.fixtures = { twoCyclicTypes, schemaWithCyclicTypes }
+global.fixtures = { withCyclicTypes, schemaWithCyclicTypes }
 
 import { MongoClient } from 'mongodb'
 

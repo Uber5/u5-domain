@@ -2,7 +2,7 @@ import { MongoClient } from 'mongodb'
 
 describe('to mongo', () => {
 
-  const [ t1, t2, t1Detail ] = fixtures.twoCyclicTypes()
+  const [ t1, t2, t1Detail ] = fixtures.withCyclicTypes()
 
   const schema = new domain.DomainSchema({ types: [ t1, t2, t1Detail ] })
   const connected = domain.connectToMongo(mongo, schema)
