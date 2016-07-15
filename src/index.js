@@ -89,7 +89,7 @@ export class DomainType {
   get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
   createPropertyValidator() {
-    return { type: `/${ this[Spec].name }`} // TODO: we don't have a spec with this name yet...
+    return { '$ref': `/domain/${ this[Spec].name }` }
   }
 }
 

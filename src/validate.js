@@ -5,6 +5,7 @@ import { Spec } from './common'
 const createSchemaForDomainConstraints = (domainSchema, domainType) => {
   const schema = {
     type: 'object',
+    id: `/domain/${ domainType.name }`,
     properties: {
     },
     additionalProperties: false
@@ -32,13 +33,20 @@ const createSchemaForDomainConstraints = (domainSchema, domainType) => {
   return schema
 }
 
+const getSchemaForDomainConstraints = (schema, domainType) => {
+  if (!domainType[Spec].schemaForDomainConstraints) {
+    domainType[Spec].schemaForDomainConstraints = createSchemaForDomainConstraints(schema, domainType)
+  }
+  return domainType[Spec].schemaForDomainConstraints
+}
 export const getValidatorForType = (schema, domainType) => {
   const validator = new Validator()
-  const schemas = []
-  schemas.push(createSchemaForDomainConstraints(schema, domainType))
+  const schemas = Object.entries(schema.types)
+  .map(([ name, type ]) => getSchemaForDomainConstraints(schema, type))
   // TODO: add validation declared for type
-  validator.addSchema({ allOf: schemas }, 'u5Domain')
+  schemas.forEach(schema => validator.addSchema(schema), schema.id)
+  validator.addSchema({ allOf: [ { '$ref': `/domain/${ domainType.name }`}] }, 'u5Domain')
   return validator
 }
 
-export const filterValidateResult = f => f
+export const filterValidateResult = f => f // TODO

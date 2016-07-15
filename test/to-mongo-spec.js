@@ -44,6 +44,27 @@ describe('to mongo', () => {
     .catch(err => console.log(err))
   })
 
+  describe('validation on nested type', () => {
+    it('succeeds when nested type correctly mentioned', done => {
+      const newT2 = { someIntField: 45, someT1: { someScalarField: 'some value' }}
+      t2Type.validate(newT2)
+      .then(valid => {
+        console.log('with nested t2, validation result', valid)
+        expect(valid.errors.length).toEqual(0)
+        done()
+      })
+    })
+    it('fails when referring to incorrect type / other value', done => {
+      const newT2 = { someIntField: 47, someT1: 'not a t1'}
+      t2Type.validate(newT2)
+      .then(valid => {
+        console.log('with nested t2, validation result', valid)
+        expect(valid.errors.length).toEqual(2)
+        done()
+      })
+    })
+  })
+
   describe('"hasMany", "belongsTo", "hasOne"', () => {
     /**
      * Weird: We can do this without implementing anything specific for the 'hasMany' specifiction of t1
@@ -70,5 +91,6 @@ describe('to mongo', () => {
         done()
       })
     })
+    it('allows hasOne (and maybe belongsTo)')
   })
 })
