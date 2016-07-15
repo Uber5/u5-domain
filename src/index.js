@@ -9,10 +9,11 @@ import { mapHasManyFromSpec } from './associations'
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
 export class ScalarType {
-  constructor(name, mapGraphQLToType) {
+  constructor(name, mapGraphQLToType, jsonType) {
     this[Spec] = {
       name,
-      mapGraphQLToType
+      mapGraphQLToType,
+      jsonType
     }
   }
   get name() { return this[Spec].name }
@@ -21,11 +22,12 @@ export class ScalarType {
   }
   isScalar() { return true }
   toGraphQLType(gql) { return this[Spec].mapGraphQLToType(gql) }
+  createPropertyValidator() { return { type: this[Spec].jsonType } }
 }
 
-export const DomainString = new ScalarType('String', gql => gql.GraphQLString)
-export const DomainInt = new ScalarType('Int', gql => gql.GraphQLInt)
-export const DomainID = new ScalarType('ID', gql => gql.GraphQLID)
+export const DomainString = new ScalarType('String', gql => gql.GraphQLString, 'string')
+export const DomainInt = new ScalarType('Int', gql => gql.GraphQLInt, 'int')
+export const DomainID = new ScalarType('ID', gql => gql.GraphQLID, 'any')
 
 export const domainScalarTypes = [ DomainString, DomainInt, DomainID ]
 
@@ -62,6 +64,10 @@ export class DomainField {
   toString() { return `DomainField[${ this.name }, type=${ this.type }]`}
   get name() { return this[Spec].name }
   get type() { const t = this[Spec].type; return typeof t === 'function' ? t() : t }
+  createPropertyValidator() {
+    const spec = this[Spec]
+    return spec.type.createPropertyValidator()
+  }
 }
 
 export class DomainType {
@@ -75,15 +81,20 @@ export class DomainType {
     this[Spec].fields = mapFieldsFromSpec(spec)
     this[Spec].fields.push(new DomainField("_id", DomainID))
 
-    this[Spec].hasMany = mapHasManyFromSpec(spec)
+    this[Spec].rawHasMany = spec.hasMany
   }
   get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
 }
 
+const initialiseAssociations = type => {
+  type[Spec].hasMany = mapHasManyFromSpec(type[Spec].name, type[Spec].rawHasMany)
+}
+
 export class DomainSchema {
   constructor(spec) {
     this[Spec] = { types: spec.types || [] }
+    this[Spec].types.forEach(type => initialiseAssociations(type))
   }
   get types() {
     return this[Spec].types.reduce((memo, t) => { memo[t.name] = t; return memo }, {})

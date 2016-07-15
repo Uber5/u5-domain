@@ -1,6 +1,7 @@
 import invariant from 'invariant'
 import camelcase from 'camelcase'
 import pluralize from 'pluralize'
+import { getValidatorForType, filterValidateResult } from './validate'
 
 function collectionNameOf(domainType) {
   return pluralize(camelcase(domainType.name))
@@ -36,9 +37,10 @@ const wrapMongoCollectionFunction = function(domainType, functionName) {
 }
 
 class MongoTypeWrapper {
-  constructor(mongo, domainType) {
+  constructor(mongo, schema, domainType) {
     this.mongo = mongo
     this.domainType = domainType
+    this.schema = schema
 
     const functionsToBeWrapped = [ 'insert', 'update', 'remove' ]
     functionsToBeWrapped
@@ -50,7 +52,12 @@ class MongoTypeWrapper {
     return new MongoCursorWrapper({ mongo, domainType, findArguments: arguments })
   }
   validate(instance) {
-    return Promise.resolve(null) // TODO: fake
+    if (!this.validator) {
+      this.validator = getValidatorForType(this.schema, this.domainType)
+    }
+    const validator = this.validator
+    const result = validator.validate(instance, validator.schemas.u5Domain)
+    return Promise.resolve(filterValidateResult(result))
   }
 }
 
@@ -58,6 +65,6 @@ export const connectToMongo = (mongo, schema) => () => new Proxy({}, {
   get: function(target, name) {
     invariant(mongo && mongo.then, '"mongo" must be a promise')
     invariant(schema.types[name], `invalid domain type ${ name }`)
-    return new MongoTypeWrapper(mongo, schema.types[name])
+    return new MongoTypeWrapper(mongo, schema, schema.types[name])
   }
 })

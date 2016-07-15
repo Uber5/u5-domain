@@ -21,7 +21,7 @@ const twoCyclicTypes = () => {
         details: () => t1Detail,
         specialDetails: () => ({
           type: () => t1Detail,
-          foreignKey: 'specialShopId'
+          foreignKey: 'specialT1Id'
         })
       }
     }),

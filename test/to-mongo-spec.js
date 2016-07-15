@@ -46,7 +46,7 @@ describe('to mongo', () => {
   describe('"hasMany", "belongsTo", "hasOne"', () => {
     /**
      * Weird: We can do this without implementing anything specific for the 'hasMany' specifiction of t1
-     * We may want to check though that t1Detail.shopId is a valid property.
+     * We may want to check though that t1Detail.t1Id is a valid property.
      * But how? The way we wrap the insert() function is generic. We could filter properties
      * in fetch() in to-mongo.js?
     */
@@ -54,15 +54,16 @@ describe('to mongo', () => {
     const t1Detail = { description: 'Some details...'}
     beforeEach(done => {
       t1Type.insert(t1).then(() => {
-        t1Detail.shopId = t1._id
+        t1Detail.t1Id = t1._id
         return t1DetailType.validate(t1Detail)
       })
+      .then(validationResults => console.log('validationResults', validationResults))
       .then(() => t1DetailType.insert(t1Detail))
       .then(() => done())
       .catch(err => console.log('err', err))
     })
     it('allows to query via "hasMany"', done => {
-      t1DetailType.find({ shopId: t1._id }).fetch().then(details => {
+      t1DetailType.find({ t1Id: t1._id }).fetch().then(details => {
         expect(details.length).toEqual(1)
         expect(details[0].description).toEqual('Some details...')
         done()

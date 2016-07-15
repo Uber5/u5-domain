@@ -34,6 +34,7 @@
     "camelcase": "3.0.0",
     "debug": "2.2.0",
     "invariant": "2.2.1",
+    "jsonschema": "1.1.0",
     "pluralize": "3.0.0"
   },
   "files": [
