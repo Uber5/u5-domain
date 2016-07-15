@@ -65,8 +65,11 @@ export class DomainField {
   get name() { return this[Spec].name }
   get type() { const t = this[Spec].type; return typeof t === 'function' ? t() : t }
   createPropertyValidator() {
-    const spec = this[Spec]
-    return spec.type.createPropertyValidator()
+    invariant(
+      typeof this.type.createPropertyValidator === 'function',
+      `type ${ this.name } has no createPropertyValidator function.`
+    )
+    return this.type.createPropertyValidator()
   }
 }
 
@@ -85,6 +88,9 @@ export class DomainType {
   }
   get fields() { return this[Spec].fields }
   get name() { return this[Spec].name }
+  createPropertyValidator() {
+    return { type: `/${ this[Spec].name }`} // TODO: we don't have a spec with this name yet...
+  }
 }
 
 const initialiseAssociations = type => {
@@ -99,6 +105,8 @@ export class DomainSchema {
   get types() {
     return this[Spec].types.reduce((memo, t) => { memo[t.name] = t; return memo }, {})
   }
+  // TODO: we probably don't want this, validate
+  // via MongoTypeWrapper#validate rather
   validate(typeName, object) {
     const t = this[Spec].types[typeName]
     return Promise.resolve() // TODO: fake

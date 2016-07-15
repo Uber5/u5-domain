@@ -13,7 +13,8 @@ describe('to mongo', () => {
   it('allows to connect a schema to mongo, insert and find', (done) => {
 
     const newT2 = { someIntField: 42 }
-    schema.validate('t2', newT2)
+    t2Type.validate(newT2)
+    .then(valid => expect(valid.errors.length).toEqual(0))
     .then(() => t2Type.insert(newT2))
     .then(result => t2Type.find({ someIntField: 42 }).fetch())
     .then(t2s => { /* console.log('t2s in mongo', t2s); */ expect(t2s.length).toEqual(1); done() })
