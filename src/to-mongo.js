@@ -1,7 +1,6 @@
 import invariant from 'invariant'
 import camelcase from 'camelcase'
 import pluralize from 'pluralize'
-import { getValidatorForType, filterValidateResult } from './validate'
 
 function collectionNameOf(domainType) {
   return pluralize(camelcase(domainType.name))
@@ -52,16 +51,7 @@ class MongoTypeWrapper {
     return new MongoCursorWrapper({ mongo, domainType, findArguments: arguments })
   }
   validate(instance) {
-    if (!this.validator) {
-      this.validator = getValidatorForType(this.schema, this.domainType)
-    }
-    const validator = this.validator
-    console.log('validator', validator.schemas.u5Domain)
-    Object.entries(validator.schemas).forEach(([ name, schema ]) => console.log(`  schema ${ name }:`, schema))
-    console.log('VALIDATING', instance)
-    console.log('validator /domain/t2 properties', validator.schemas['/domain/t2'].properties)
-    const result = validator.validate(instance, validator.schemas.u5Domain)
-    return Promise.resolve(filterValidateResult(result))
+    return this.domainType.validate(instance)
   }
 }
 

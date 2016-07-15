@@ -5,6 +5,7 @@ import toGraphQLTypes from './to-graphql'
 import { connectToMongo } from './to-mongo'
 import { Spec } from './common'
 import { mapHasManyFromSpec } from './associations'
+import { getValidatorForType, filterValidateResult } from './validate'
 
 const mapFieldsFromSpec = spec => Object.keys(spec.fields || {}).map(name => new DomainField(name, spec.fields[name]))
 
@@ -60,6 +61,9 @@ export class DomainField {
     } else {
       throw new Error(`Unable to determine type for field ${ name }`)
     }
+    if (spec.schema) {
+      normalized.schema = spec.schema
+    }
   }
   toString() { return `DomainField[${ this.name }, type=${ this.type }]`}
   get name() { return this[Spec].name }
@@ -69,7 +73,17 @@ export class DomainField {
       typeof this.type.createPropertyValidator === 'function',
       `type ${ this.name } has no createPropertyValidator function.`
     )
-    return this.type.createPropertyValidator()
+    let validator = this.type.createPropertyValidator()
+    const spec = this[Spec]
+    if (spec.schema) {
+      validator = {
+        allOf: [
+          validator,
+          spec.schema
+        ]
+      }
+    }
+    return validator
   }
 }
 
@@ -91,6 +105,18 @@ export class DomainType {
   createPropertyValidator() {
     return { '$ref': `/domain/${ this[Spec].name }` }
   }
+  validate(instance) {
+    if (!this.validator) {
+      this.validator = getValidatorForType(this.schema, this)
+    }
+    const validator = this.validator
+    console.log('validator', validator.schemas.u5Domain)
+    Object.entries(validator.schemas).forEach(([ name, schema ]) => console.log(`  schema ${ name }:`, schema))
+    console.log('VALIDATING', instance)
+    const result = validator.validate(instance, validator.schemas.u5Domain)
+    return Promise.resolve(filterValidateResult(result))
+
+  }
 }
 
 const initialiseAssociations = type => {
@@ -101,6 +127,10 @@ export class DomainSchema {
   constructor(spec) {
     this[Spec] = { types: spec.types || [] }
     this[Spec].types.forEach(type => initialiseAssociations(type))
+    this[Spec].types.forEach(type => {
+      invariant(!type.schema, `Type ${ type.name } is used in a schema already`)
+      type.schema = this
+    })
   }
   get types() {
     return this[Spec].types.reduce((memo, t) => { memo[t.name] = t; return memo }, {})

@@ -43,7 +43,6 @@ export const getValidatorForType = (schema, domainType) => {
   const validator = new Validator()
   const schemas = Object.entries(schema.types)
   .map(([ name, type ]) => getSchemaForDomainConstraints(schema, type))
-  // TODO: add validation declared for type
   schemas.forEach(schema => validator.addSchema(schema), schema.id)
   validator.addSchema({ allOf: [ { '$ref': `/domain/${ domainType.name }`}] }, 'u5Domain')
   return validator
